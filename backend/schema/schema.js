@@ -1,6 +1,17 @@
-const graphql = require('graphql');
+const graphql = require("graphql");
+const student = require("../dbSchema/StudentModel");
 const { studentSignUp, companySignUp, login } = require("../mutations/signUp");
-const {jobPost} = require("../mutations/jobs");
+const {
+  addStudentProfile,
+  addStudentEducation,
+  addStudentExperience,
+  updateStudentProfile,
+  updateStudentEducation,
+  updateStudentExperience,
+  addCompanyProfile,
+  updateCompanyProfile,
+} = require("../mutations/profile");
+const { jobPost } = require("../mutations/jobs");
 
 const {
   GraphQLObjectType,
@@ -10,7 +21,7 @@ const {
   GraphQLInt,
   GraphQLList,
   GraphQLNonNull,
-  GraphQLDate
+  GraphQLDate,
 } = graphql;
 
 const StudentExperience = new GraphQLObjectType({
@@ -31,8 +42,8 @@ const StudentEducation = new GraphQLObjectType({
     collegeName: { type: GraphQLString },
     degree: { type: GraphQLString },
     location: { type: GraphQLString },
-    yearOfPassing: {type:GraphQLInt},
-    cgpa: {type:GraphQLString},
+    yearOfPassing: { type: GraphQLString },
+    cgpa: { type: GraphQLString },
     major: { type: GraphQLString },
   }),
 });
@@ -56,27 +67,16 @@ const StudentModel = new GraphQLObjectType({
     dateOfBirth: { type: GraphQLString },
     major: { type: GraphQLString },
     careerObjectives: { type: GraphQLString },
+
     experience: {
-      type: StudentExperience,
-      resolve(parent, args) {
-        return parent.experience;
-      },
+      type: new GraphQLList(StudentExperience),
     },
-    education: {
-      type: StudentEducation,
-      resolve(parent, args) {
-        return parent.education;
-      },
-    },
+    education: { type: GraphQLList(StudentEducation) },
     address: {
-      type: StudentAddress,
-      resolve(parent, args) {
-        return parent.address;
-      },
+      type: GraphQLList(StudentAddress),
     },
   }),
 });
-
 
 const StatusType = new GraphQLObjectType({
   name: "Status",
@@ -86,24 +86,23 @@ const StatusType = new GraphQLObjectType({
   }),
 });
 
-
 const RootQuery = new GraphQLObjectType({
   name: "RootQueryType",
   fields: {
-    student: {
-      type: StudentModel,
-      args: { studentId: { type: GraphQLString } },
+    getStudent: {
+      type: new GraphQLList(StudentModel),
+      args: { email: { type: GraphQLString } },
       async resolve(parent, args) {
-        let student = await Student.findById(args.studentId);
-        if (student) {
-          return student;
+        let studentdet = await student.find({ email: args.email });
+        console.log("this is student details", studentdet);
+
+        if (studentdet) {
+          return studentdet;
         }
       },
     },
   },
 });
-console.log("IN SCHEMA");
-
 
 const Mutation = new GraphQLObjectType({
   name: "Mutation",
@@ -143,6 +142,118 @@ const Mutation = new GraphQLObjectType({
         return login(args);
       },
     },
+    addCompanyProfile: {
+      type: StatusType,
+      args: {
+        email: { type: GraphQLString },
+        description: { type: GraphQLString },
+        location: { type: GraphQLString },
+      },
+      async resolve(parent, args) {
+        return addCompanyProfile(args);
+      },
+    },
+    updateCompanyProfile: {
+      type: StatusType,
+      args: {
+        email: { type: GraphQLString },
+        description: { type: GraphQLString },
+        location: { type: GraphQLString },
+      },
+      async resolve(parent, args) {
+        return updateCompanyProfile(args);
+      },
+    },
+    addStudentProfile: {
+      type: StatusType,
+      args: {
+        email: { type: GraphQLString },
+        dateOfBirth: { type: GraphQLString },
+        major: { type: GraphQLString },
+        skillSet: { type: GraphQLString },
+        careerObjectives: { type: GraphQLString },
+      },
+      async resolve(parent, args) {
+        return addStudentProfile(args);
+      },
+    },
+    updateStudentProfile: {
+      type: StatusType,
+      args: {
+        email: { type: GraphQLString },
+        dateOfBirth: { type: GraphQLString },
+        major: { type: GraphQLString },
+        skillSet: { type: GraphQLString },
+        careerObjectives: { type: GraphQLString },
+      },
+      async resolve(parent, args) {
+        return updateStudentProfile(args);
+      },
+    },
+    addStudentExperience: {
+      type: StatusType,
+      args: {
+        email: { type: GraphQLString },
+        title: { type: GraphQLString },
+        company: { type: GraphQLString },
+        location: { type: GraphQLString },
+        startDate: { type: GraphQLString },
+        endDate: { type: GraphQLString },
+        description: { type: GraphQLString },
+      },
+      async resolve(parent, args) {
+        return addStudentExperience(args);
+      },
+    },
+    addStudentEducation: {
+      type: StatusType,
+      args: {
+        email: { type: GraphQLString },
+        collegeName: { type: GraphQLString },
+        degree: { type: GraphQLString },
+        location: { type: GraphQLString },
+        yearOfPassing: { type: GraphQLString },
+        cgpa: { type: GraphQLString },
+        major: { type: GraphQLString },
+      },
+      async resolve(parent, args) {
+        return addStudentEducation(args);
+      },
+    },
+    updateStudentEducation: {
+      type: StatusType,
+      args: {
+        _id: { type: GraphQLString },
+        email: { type: GraphQLString },
+        collegeName: { type: GraphQLString },
+        degree: { type: GraphQLString },
+        location: { type: GraphQLString },
+        yearOfPassing: { type: GraphQLString },
+        cgpa: { type: GraphQLString },
+        major: { type: GraphQLString },
+      },
+      async resolve(parent, args) {
+        return updateStudentEducation(args);
+      },
+    },
+
+    updateStudentExperience: {
+      type: StatusType,
+      args: {
+        _id: { type: GraphQLString },
+        email: { type: GraphQLString },
+        collegeName: { type: GraphQLString },
+        degree: { type: GraphQLString },
+        location: { type: GraphQLString },
+        yearOfPassing: { type: GraphQLString },
+        cgpa: { type: GraphQLString },
+        major: { type: GraphQLString },
+      },
+      async resolve(parent, args) {
+        return updateStudentExperience(args);
+      },
+    },
+
     jobPost: {
       type: StatusType,
       args: {
@@ -160,8 +271,7 @@ const Mutation = new GraphQLObjectType({
   },
 });
 
-
 module.exports = new GraphQLSchema({
-    query: RootQuery,
-    mutation: Mutation
+  query: RootQuery,
+  mutation: Mutation,
 });

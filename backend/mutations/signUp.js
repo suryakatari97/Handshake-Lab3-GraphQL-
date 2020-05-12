@@ -48,7 +48,6 @@ const companySignUp = async (args) => {
 };
 
 const login = async (args) => {
-    console.log("IN LOGIN BACKEND",args);
     
   var User = student;
   if (args.userType === "company") {
@@ -60,17 +59,13 @@ const login = async (args) => {
     return { status: 401, message: "NO_USER" };
   }
   if (passwordHash.verify(args.password, user.password)) {
-    console.log("THIS IS USER ", user);
 
     const payload = {
       id: user._id,
       name: user.name,
       email: user.email,
       userType: args.userType,
-    };
-
-    console.log("this is payload",payload);
-    
+    };    
     var token = jwt.sign(payload, secret,{
       expiresIn: 100800,
     });

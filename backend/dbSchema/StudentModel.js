@@ -24,7 +24,7 @@ var studentsSchema = new Schema({
         required: true
     },
     dateOfBirth:{
-        type : Date
+        type : String
     },
     major:{
         type: String
@@ -49,8 +49,8 @@ var studentsSchema = new Schema({
         collegeName : String,
         degree : String,
         location: String,
-        yearOfPassing: Number,
-        cgpa : Number,
+        yearOfPassing: String,
+        cgpa : String,
         major : String
     }],
     
