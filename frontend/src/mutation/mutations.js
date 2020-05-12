@@ -9,8 +9,8 @@ mutation AddStudent($name: String,$email:String,$password:String,$collegeName:St
 }
 `;
 
-const addcompanyMutation = gql`
-mutation AddCompany($name: String,$email:String,$password:String,$location:location){
+const addCompanyMutation = gql`
+mutation AddCompany($name: String,$email:String,$password:String,$location:String){
     addCompany(name: $name,email:$email,password:$password,location:$location){
         message
         status
@@ -28,4 +28,4 @@ mutation login($email:String,$password:String,$userType:String){
 `;
 
 
-export { loginMutation, addcompanyMutation, addStudentMutation };
+export { loginMutation, addCompanyMutation, addStudentMutation };

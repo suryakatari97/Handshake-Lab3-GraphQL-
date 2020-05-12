@@ -4,20 +4,16 @@ const Schema = mongoose.Schema;
 var companySchema = new Schema({
     name: 
     {
-        type: String, 
-        required: true
+        type: String,         
     },
     email: 
     {
         type: String, 
-        required: true,
-        unique: true,
-        dropDups: true
     },
     password:
     {
         type: String, 
-        required: true
+        
     },
     location:{
         type: String, 
@@ -27,12 +23,7 @@ var companySchema = new Schema({
         type: String, 
         required: false
     },
-    profilePicture : {
-        type : String,
-        default: ''
-    }});
-
-
+   });
 
 const companyModel = mongoose.model('company', companySchema);
 module.exports = companyModel;

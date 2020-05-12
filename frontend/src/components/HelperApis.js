@@ -27,6 +27,7 @@ export var getUserName = () => {
   }
   return "";
 };
+
 export var getUserType = () => {
   if (localStorage.jwtToken) {
     const decoded = jwt_decode(localStorage.jwtToken);

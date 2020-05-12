@@ -28,7 +28,7 @@ class studentSignUp extends Component {
       password: this.state.password,
       collegeName: this.state.collegeName,
     };
-    
+    alert(JSON.stringify(data))
     let mutationResponse = await this.props.addStudentMutation({
       variables: {
         name: this.state.name,

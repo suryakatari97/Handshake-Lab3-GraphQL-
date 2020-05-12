@@ -1,6 +1,8 @@
 const student = require("../dbSchema/StudentModel");
 const company = require("../dbSchema/CompanyModel");
+const jwt = require("jsonwebtoken");
 const passwordHash = require("password-hash");
+const {secret} = require("../config");
 
 const studentSignUp = async (args) => {
     console.log("IN STUDENT SIGNUP MUTATION", args);
@@ -25,6 +27,7 @@ const studentSignUp = async (args) => {
 };
 
 const companySignUp = async (args) => {
+    console.log("IN COMPANY SIGNUP MUTATION", args);
   let hashedPassword = passwordHash.generate(args.password);
   let newUser = new company({
     name: args.name,
@@ -45,6 +48,8 @@ const companySignUp = async (args) => {
 };
 
 const login = async (args) => {
+    console.log("IN LOGIN BACKEND",args);
+    
   var User = student;
   if (args.userType === "company") {
     User = company;
@@ -63,15 +68,20 @@ const login = async (args) => {
       email: user.email,
       userType: args.userType,
     };
-    var token = jwt.sign(payload, {
+
+    console.log("this is payload",payload);
+    
+    var token = jwt.sign(payload, secret,{
       expiresIn: 100800,
     });
-    token = "JWT" + token;
+    console.log("THIS IS TOKEN", token);
+    token = 'JWT '+ token;
     return { status: 200, message: token };
   } else {
     return { status: 401, message: "INCORRECT_PASSWORD" };
   }
 };
+
 
 exports.studentSignUp = studentSignUp;
 exports.companySignUp = companySignUp;
