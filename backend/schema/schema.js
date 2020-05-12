@@ -1,5 +1,7 @@
 const graphql = require("graphql");
 const student = require("../dbSchema/StudentModel");
+const Job = require("../dbSchema/JobModel");
+const JobApplication = require("../dbSchema/JobApplicationsModel");
 const { studentSignUp, companySignUp, login } = require("../mutations/signUp");
 const {
   addStudentProfile,
@@ -11,7 +13,7 @@ const {
   addCompanyProfile,
   updateCompanyProfile,
 } = require("../mutations/profile");
-const { jobPost } = require("../mutations/jobs");
+const { postJob, applyJob } = require("../mutations/jobs");
 
 const {
   GraphQLObjectType,
@@ -27,6 +29,7 @@ const {
 const StudentExperience = new GraphQLObjectType({
   name: "experience",
   fields: () => ({
+    _id: { type: GraphQLString },
     title: { type: GraphQLString },
     company: { type: GraphQLString },
     location: { type: GraphQLString },
@@ -39,6 +42,7 @@ const StudentExperience = new GraphQLObjectType({
 const StudentEducation = new GraphQLObjectType({
   name: "education",
   fields: () => ({
+    _id: { type: GraphQLString },
     collegeName: { type: GraphQLString },
     degree: { type: GraphQLString },
     location: { type: GraphQLString },
@@ -51,6 +55,7 @@ const StudentEducation = new GraphQLObjectType({
 const StudentAddress = new GraphQLObjectType({
   name: "address",
   fields: () => ({
+    _id: { type: GraphQLString },
     city: { type: GraphQLString },
     state: { type: GraphQLString },
     country: { type: GraphQLString },
@@ -60,6 +65,7 @@ const StudentAddress = new GraphQLObjectType({
 const StudentModel = new GraphQLObjectType({
   name: "student",
   fields: () => ({
+    _id: { type: GraphQLString },
     name: { type: GraphQLString },
     email: { type: GraphQLString },
     password: { type: GraphQLString },
@@ -69,7 +75,7 @@ const StudentModel = new GraphQLObjectType({
     careerObjectives: { type: GraphQLString },
 
     experience: {
-      type: new GraphQLList(StudentExperience),
+      type: GraphQLList(StudentExperience),
     },
     education: { type: GraphQLList(StudentEducation) },
     address: {
@@ -77,6 +83,72 @@ const StudentModel = new GraphQLObjectType({
     },
   }),
 });
+
+const CompanyModel = new GraphQLObjectType({
+  name: "company",
+  fields: () => ({
+    _id: { type: GraphQLString },
+    name: { type: GraphQLString },
+    email: { type: GraphQLString },
+    password: { type: GraphQLString },
+    location: { type: GraphQLString },
+    description: { type: GraphQLString },
+  }),
+});
+
+const JobModel = new GraphQLObjectType({
+  name: "job",
+  fields: () => ({
+    _id: { type: GraphQLString },
+    title: { type: GraphQLString },
+    postingDate: { type: GraphQLString },
+    deadline: { type: GraphQLString },
+    location: { type: GraphQLString },
+    salary: { type: GraphQLString },
+    jobType: { type: GraphQLString },
+    description: { type: GraphQLString },
+    companyId: { type: GraphQLString },
+    companyName: { type: GraphQLString },
+  }),
+});
+
+const JobApplicationsModel = new GraphQLObjectType({
+  name: "jobApplications",
+  fields: () => ({
+    _id: { type: GraphQLString },
+    job: {
+      type: JobModel,
+      async resolve(parent, args) {
+        console.log("parent id is " + parent.jobId);
+        let result = await Job.findOne({ _id: parent.jobId });
+        console.log("RESULT IS " + JSON.stringify(result));
+        return result;
+      },
+    },
+    company: {
+      type: CompanyModel,
+      async resolve(parent, args) {
+        console.log("parent id is " + parent.companyId);
+        let result = await Company.findOne({ _id: parent.companyId });
+        console.log("RESULT IS " + JSON.stringify(result));
+        return result;
+      },
+    },
+    student: {
+      type: StudentModel,
+      async resolve(parent, args) {
+        console.log("parent id is " + parent.studentId);
+        let result = await Student.findOne({ _id: parent.studentId });
+        console.log("RESULT IS " + JSON.stringify(result));
+        return result;
+      },
+    },
+    jobStatus: { type: GraphQLString },
+    studentName: { type: GraphQLString },
+  }),
+});
+
+
 
 const StatusType = new GraphQLObjectType({
   name: "Status",
@@ -94,15 +166,109 @@ const RootQuery = new GraphQLObjectType({
       args: { email: { type: GraphQLString } },
       async resolve(parent, args) {
         let studentdet = await student.find({ email: args.email });
-        console.log("this is student details", studentdet);
-
         if (studentdet) {
           return studentdet;
         }
       },
     },
+    //getallstudents
+    students: {
+      type: new GraphQLList(StudentModel),
+      async resolve(parent, args) {
+        let students = await student.find();
+        console.log(students);
+
+        if (students) {
+          return students;
+        }
+      },
+    },
+    //getjobdetails
+    job: {
+      type: new GraphQLList(JobModel),
+      args: { jobId: { type: GraphQLString } },
+      async resolve(parent, args) {
+        let job = await Job.findById({ _id: args.jobId });
+        if (job) {
+          return job;
+        }
+      },
+    },
+    //getjobbytitle
+    jobByTitle: {
+      type: new GraphQLList(JobModel),
+      args: { title: { type: GraphQLString } },
+      async resolve(parent, args) {
+        let job = await Job.find({ title: args.title });
+        if (job) {
+          return job;
+        }
+      },
+    },
+    //getalljobs
+    
+    jobs: {
+      type: new GraphQLList(JobModel),
+      args: { email: { type: GraphQLString } },
+      async resolve(parent) {
+        let jobs = await Job.find();
+        console.log("companyJobs result " + jobs);
+        if (jobs) {
+          return jobs;
+        }
+      },
+    },
+    //getcompanyjobs
+    companyJobs: {
+      type: new GraphQLList(JobModel),
+      args: { companyId: { type: GraphQLString } },
+      async resolve(parent, args) {
+        let jobs = await Job.find({ companyId: args.companyId });
+        console.log("companyJobs result " + jobs);
+        return jobs;
+      },
+    },
+    // companyJobApplicationDetails: {
+    //   type: new GraphQLList(JobApplicationsModel),
+    //   args: { jobId: { type: GraphQLString } },
+    //   async resolve(parent, args) {
+    //     let applications = await Job.find({ jobId: args.jobId });
+    //     console.log("companyJobApplicationDetails result " + applications);
+    //     if (applications) {
+    //       return applications;
+    //     }
+    //   },
+    // },
+    //viewstudentappliedjobs
+    studentJobApplications: {
+      type: new GraphQLList(JobApplicationsModel),
+      args: { studentId: { type: GraphQLString } },
+      async resolve(parent, args) {
+        let applications = await JobApplication.find({
+          studentId: args.studentId,
+        });
+        console.log("studentJobApplications result " + applications);
+        if (applications) {
+          return applications;
+        }
+      },
+    },
+    //viewstudentsappliedforjobs
+    companyJobApplicants: {
+      type: new GraphQLList(JobApplicationsModel),
+      args: { jobId: { type: GraphQLString } },
+      async resolve(parent, args) {
+        let applications = await JobApplication.find({ jobId: args.jobId });
+        console.log("companyJobApplicants result " + applications);
+        if (applications) {
+          return applications;
+        }
+      },
+    },
   },
 });
+
+
 
 const Mutation = new GraphQLObjectType({
   name: "Mutation",
@@ -254,7 +420,7 @@ const Mutation = new GraphQLObjectType({
       },
     },
 
-    jobPost: {
+    postJob: {
       type: StatusType,
       args: {
         title: { type: GraphQLString },
@@ -266,6 +432,23 @@ const Mutation = new GraphQLObjectType({
         description: { type: GraphQLString },
         companyId: { type: GraphQLString },
         companyName: { type: GraphQLString },
+      },
+      resolve(parent, args) {
+        return postJob(args);
+      },
+    },
+
+    applyJob: {
+      type: StatusType,
+      args: {
+        jobId: { type: GraphQLString },
+        companyId: { type: GraphQLString },
+        studentId: { type: GraphQLString },
+        jobStatus: { type: GraphQLString },
+        studentName: { type: GraphQLString },
+      },
+      resolve(parent, args) {
+        return applyJob(args);
       },
     },
   },
