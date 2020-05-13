@@ -193,16 +193,7 @@ const RootQuery = new GraphQLObjectType({
       },
     },
     //getjobbytitle
-    jobByTitle: {
-      type: new GraphQLList(JobModel),
-      args: { title: { type: GraphQLString } },
-      async resolve(parent, args) {
-        let job = await Job.find({ title: args.title });
-        if (job) {
-          return job;
-        }
-      },
-    },
+
     //getalljobs
 
     jobs: {
@@ -220,25 +211,24 @@ const RootQuery = new GraphQLObjectType({
     companyJobs: {
       type: new GraphQLList(JobModel),
       args: { companyName: { type: GraphQLString } },
-      
+
       async resolve(parent, args) {
-        console.log("THIS IS COMPANY ID ",args.companyName);
+        console.log("THIS IS COMPANY ID ", args.companyName);
         let jobs = await Job.find({ companyName: args.companyName });
         console.log("company Jobs result " + jobs);
         return jobs;
       },
     },
-    // companyJobApplicationDetails: {
-    //   type: new GraphQLList(JobApplicationsModel),
-    //   args: { jobId: { type: GraphQLString } },
-    //   async resolve(parent, args) {
-    //     let applications = await Job.find({ jobId: args.jobId });
-    //     console.log("companyJobApplicationDetails result " + applications);
-    //     if (applications) {
-    //       return applications;
-    //     }
-    //   },
-    // },
+    jobByTitle: {
+      type: new GraphQLList(JobModel),
+      args: { title: { type: GraphQLString } },
+      async resolve(parent, args) {
+        let job = await Job.find({ title: args.title });
+        if (job) {
+          return job;
+        }
+      },
+    },
     //viewstudentappliedjobs
     studentJobApplications: {
       type: new GraphQLList(JobApplicationsModel),

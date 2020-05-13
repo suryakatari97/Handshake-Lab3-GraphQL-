@@ -56,13 +56,13 @@ class companyDashboard extends Component {
                     <strong>{job.location}</strong>
                   </p>
                   <p className="card-text">
-                    <strong>Salary:</strong> {job.salary}
+                    <strong>Salary: {job.salary}</strong>
                   </p>
                   <p className="card-text">
                     <strong>Posted on : </strong>
-                    <strong>{job.location}</strong>
+                    <strong>{job.postingDate}</strong>
                     <strong> Application Deadline : </strong>
-                    <strong>{job.location}</strong>
+                    <strong>{job.deadline}</strong>
                   </p>
 
                   <p className="card-text">

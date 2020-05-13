@@ -42,7 +42,7 @@ const applyJob = async (args) => {
 
   if (jobApplied) {
     console.log("INSIDE IF");
-    return { status: 200, message: "SUCCESS" };
+    return { status: 200, message: "APPLIED!" };
   } else {
     console.log("INSIDE ELSE");
     return { status: 500, message: "INTERNAL_SERVER_ERROR" };
