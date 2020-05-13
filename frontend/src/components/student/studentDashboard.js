@@ -37,10 +37,6 @@ import '../../App.css'
      console.log(this.state.file);
    };
 
-   onChange(e) {
-     this.setState({ [e.target.name]: e.target.value });
-   }
-
    async onSubmit(e) {
      e.preventDefault();
      const jobSearch = {

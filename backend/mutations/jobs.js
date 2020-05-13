@@ -17,7 +17,7 @@ const postJob = async (args) => {
     companyName: args.companyName,
   };
   console.log("INPUT IS " + JSON.stringify(data));
-  let jobCreated = await Jobs.create(data);
+  let jobCreated = await Job.create(data);
   if (jobCreated) {
     console.log("INSIDE IF");
     return { status: 200, message: "SUCCESS" };

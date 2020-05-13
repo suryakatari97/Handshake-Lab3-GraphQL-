@@ -148,8 +148,6 @@ const JobApplicationsModel = new GraphQLObjectType({
   }),
 });
 
-
-
 const StatusType = new GraphQLObjectType({
   name: "Status",
   fields: () => ({
@@ -206,13 +204,13 @@ const RootQuery = new GraphQLObjectType({
       },
     },
     //getalljobs
-    
+
     jobs: {
       type: new GraphQLList(JobModel),
       args: { email: { type: GraphQLString } },
       async resolve(parent) {
         let jobs = await Job.find();
-        console.log("companyJobs result " + jobs);
+        console.log("Jobs result " + jobs);
         if (jobs) {
           return jobs;
         }
@@ -221,10 +219,12 @@ const RootQuery = new GraphQLObjectType({
     //getcompanyjobs
     companyJobs: {
       type: new GraphQLList(JobModel),
-      args: { companyId: { type: GraphQLString } },
+      args: { companyName: { type: GraphQLString } },
+      
       async resolve(parent, args) {
-        let jobs = await Job.find({ companyId: args.companyId });
-        console.log("companyJobs result " + jobs);
+        console.log("THIS IS COMPANY ID ",args.companyName);
+        let jobs = await Job.find({ companyName: args.companyName });
+        console.log("company Jobs result " + jobs);
         return jobs;
       },
     },
@@ -267,8 +267,6 @@ const RootQuery = new GraphQLObjectType({
     },
   },
 });
-
-
 
 const Mutation = new GraphQLObjectType({
   name: "Mutation",

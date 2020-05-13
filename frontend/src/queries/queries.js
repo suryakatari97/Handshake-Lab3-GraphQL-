@@ -18,8 +18,8 @@ const getJobsQuery = gql`
 `;
 
 const getCompanyJobsQuery = gql`
-  query($companyId: String) {
-    companyJobs(companyId: $companyId) {
+  query($name: String) {
+    companyJobs(companyName: $name) {
       _id
       title
       postingDate
